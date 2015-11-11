@@ -3,7 +3,7 @@
 		<style>
 			html, body, #viewport {
 				margin: 0;
-				background: #171717;
+				background: #fffff;
 				height: 100%;
 			}
 
@@ -17,6 +17,13 @@
 				left: 0;
 				right: 0;
 				bottom: 0;
+			}
+
+			#viewport {
+				background-image: url('./media/qb_disc.png');
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-position: center;
 			}
 		</style>
 		<!--<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/raf.js"></script>-->
@@ -35,9 +42,9 @@
 		<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/require.js"></script>
 	</head>
 	<body>
-		<div id="viewport">
+		<canvas id="viewport">
 			<!--<canvas class=" pjs-layer-main" width="1039" height="485" style="position: absolute; z-index: 1;"></canvas>-->
-		</div>
+		</canvas>
 		<script>
 
 			Physics(function(world) {
@@ -53,10 +60,10 @@
 					styles: {
 						// set colors for the circle bodies
 						'circle' : {
-							strokeStyle: '#351024',
-							lineWidth: 1,
-							fillStyle: '#d33682',
-							angleIndicator: '#351024'
+							strokeStyle: '#333333',
+							lineWidth: 2,
+							fillStyle: '#eeeeee',
+							angleIndicator: '#eeeeee'
 						}
 					}
 				});
@@ -144,6 +151,13 @@
 				Physics.util.ticker.start();
 
 			});
+
+			var c=document.getElementById("viewport");
+			var ctx=c.getContext("2d");
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(300, 150);
+			ctx.stroke();
 
 		</script>
 	</body>

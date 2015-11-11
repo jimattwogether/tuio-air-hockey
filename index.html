@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<style>
+			html, body, #viewport {
+				margin: 0;
+				background: #171717;
+				height: 100%;
+			}
+
+			.pjs-meta {
+				color: #fff;
+			}
+
+			canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+		</style>
+		<!--<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/raf.js"></script>-->
+		<!--<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/physicsjs-current/physicsjs-full.min.js"></script>-->
+		<script src="./lib/physicsjs-full.min.js"></script>
+		<script>
+			if ( window.innerWidth === 0 ) {
+				window.innerWidth = parent.innerWidth;
+				window.innerHeight = parent.innerHeight;
+			}
+
+			var require = {
+				baseUrl: "http://wellcaffeinated.net/PhysicsJS/assets/scripts/"
+			};
+		</script>
+		<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/require.js"></script>
+	</head>
+	<body>
+		<div id="viewport">
+			<!--<canvas class=" pjs-layer-main" width="1039" height="485" style="position: absolute; z-index: 1;"></canvas>-->
+		</div>
+		<script>
+
+			Physics(function(world) {
+
+				var viewWidth = window.innerWidth;
+				var viewHeight = window.innerHeight;
+
+				var renderer = Physics.renderer('canvas', {
+					el: 'viewport',
+					width: viewWidth,
+					height: viewHeight,
+					meta: false, // don't display meta data
+					styles: {
+						// set colors for the circle bodies
+						'circle' : {
+							strokeStyle: '#351024',
+							lineWidth: 1,
+							fillStyle: '#d33682',
+							angleIndicator: '#351024'
+						}
+					}
+				});
+
+				// add the renderer
+				world.add( renderer );
+					
+				// render on each step
+				world.on('step', function() {
+					world.render();
+				});
+
+				// bounds of the window
+				var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
+
+				// constrain objects to these bounds
+				world.add(Physics.behavior('edge-collision-detection', {
+					aabb: viewportBounds,
+					restitution: 0.5,
+					cof: 0.99
+				}));
+
+				world.add(Physics.behavior('interactive', { el: renderer.container }));
+
+				// add the puck
+				world.add(
+					Physics.body('circle', {
+						x: 50, // x-coordinate
+						y: 30, // y-coordinate
+						vx: 2, // velocity in x-direction
+						vy: 1.2, // velocity in y-direction
+						radius: 30
+					})
+				);
+
+				// add player 1 paddle
+				world.add(
+					Physics.body('circle', {
+						x: 50,
+						y: 20,
+						width: 100,
+						height: 50,
+						radius: 50,
+						mass: 40
+					})
+				);
+
+				// add player 2 paddle
+				world.add(
+					Physics.body('circle', {
+						x: (window.innerWidth - 50),
+						y: (window.innerHeight - 20),
+						width: 100,
+						height: 50,
+						radius: 50,
+						mass: 40
+					})
+				);
+
+				world.add([
+					//Physics.behavior('constant-acceleration'),
+					//Physics.behavior('body-impulse-response'),
+					//Physics.behavior('body-collision-detection'),
+					Physics.behavior('sweep-prune')
+				]);
+
+				// ensure objects bounce when edge collision is detected
+				world.add( Physics.behavior('body-impulse-response') );
+
+				// add some gravity
+				//world.add( Physics.behavior('constant-acceleration') );
+
+				// ensure on-screen objects can collide
+				world.add(
+					Physics.behavior('body-collision-detection'),
+					Physics.behavior('sweep-prune')
+				);
+
+				// subscribe to ticker to advance the simulation
+				Physics.util.ticker.on(function( time, dt ) {
+					world.step( time );
+				});
+
+				// start the ticker
+				Physics.util.ticker.start();
+
+			});
+
+		</script>
+	</body>
+</html>

@@ -85,32 +85,13 @@
 				border-style: dashed;
 			}
 
-			.penaltyArea {
-				width: 13.5%;
-				border: 2px solid #cc0000;
-				background-color:rgba(255,0,0,0.025);
-				position: absolute;
-				height:40%;
-				top:30%;
-				display: none;
-			}
-
-			#penaltyAreaLeft {
-				left:-2px;
-			}
-
-			#penaltyAreaRight {
-				right:-2px;
-			}
-
 			.circle {
 				border-radius: 50%;
 				width: 28%;
 				height: 50%;
 				border:2px solid rgba(200,0,0,1);
-				/*background-color:rgba(255,0,0,0.1);*/
 				position: absolute;
-				/*display: inline-block;*/
+				pointer-events: none;
 			}
 
 			#semiCircleLeft {
@@ -125,9 +106,10 @@
 
 			.airHockey {
 				font-family: 'Republica Italic';
-				font-size: 40pt;
+				font-size: 60pt;
 				background: none;
 				position: absolute;
+				pointer-events: none;
 			}
 
 			.airHockey span.red {
@@ -170,8 +152,6 @@
 		<div class="line" id="lineRight"></div>
 		<div class="circle" id="semiCircleLeft"></div>
 		<div class="circle" id="semiCircleRight"></div>
-		<div class="penaltyArea" id="penaltyAreaLeft"></div>
-		<div class="penaltyArea" id="penaltyAreaRight"></div>
 		<div id="surface"></div>
 		<div id="viewport"></div>
 		<div class="scoreTicker" id="scoreTicker1">00</div>
@@ -371,17 +351,39 @@
 
 				var scoreStr = '0' + score;
 				scoreStr.slice(-2);
-				scoreTicker.innerHTML = scoreStr;
 
-				alert('Player ' + player + ' scored!');
+				showScore(player, 'Score!');
 
-				return (score >= 5);
+				if (score < 5) {
+					setTimeout(
+						function() {
+							showScore(player, scoreStr);
+						},
+						1000
+					);
+
+					return false;
+				}
+
+				return true;
+			}
+
+			function showScore(player, str) {
+				var el = 'scoreTicker' + player;
+				var scoreTicker = document.getElementById(el);
+				scoreTicker.innerHTML = str;
 			}
 
 			function gameOver(winner)
 			{
-				alert('Player ' + winner + ' wins!');
-				initialise();
+				showScore(winner, 'Winner!');
+			
+				setTimeout(
+					function() {
+						initialise();
+					},
+					3000
+				);
 			}
 
 			function destroyContainer() {
@@ -423,7 +425,6 @@
 				airHockey2.style.left = window.innerWidth * 0.5 - airHockey2.offsetWidth / 2;
 
 				Physics(init);
-
 			}
 
 			initialise();

@@ -6,9 +6,14 @@
 				src: url('./fonts/geogrotesque-medium.ttf')  format('truetype'); 
 			}
 
+			@font-face {
+				font-family: 'Republica Italic';
+				src: url('./fonts/republica_minor_bold_italic.ttf') format('truetype');
+			}
+
 			html, body, #viewport {
 				margin: 0;
-				background: #ffffff;
+				background: none;
 				height: 100%;
 				overflow: hidden;
 				font-family: "Geogrotesque Medium";
@@ -33,19 +38,114 @@
 				background-position: center;
 			}
 
+			#surface {
+				border:1px solid;
+				background-image: url('./media/hole.png');
+				background-repeat: repeat;
+				width:100%;
+				height:100%;
+				position: absolute;
+				z-index: -1;
+			}
+
 			.scoreTicker {
-				color:#000000;
+				color: #000000;
 				font-size: 100pt;
 			}
 
 			#scoreTicker1 {
-				position:absolute;
+				position: absolute;
 				transform: rotate(90deg);
 			}
 
 			#scoreTicker2 {
-				position:absolute;
+				position: absolute;
 				transform: rotate(270deg);
+			}
+
+			.line {
+				width: 0px;
+				border: 1px solid rgba(0,0,0,0.5);
+				position: absolute;
+				height:100%;
+			}
+
+			#lineLeft {
+				left:27%;
+				border-color:rgba(0,0,200,1);
+			}
+
+			#lineRight {
+				right:27%;
+				border-color:rgba(0,0,200,1);
+			}
+
+			#lineCenter {
+				left:50%;
+				border-style: dashed;
+			}
+
+			.penaltyArea {
+				width: 13.5%;
+				border: 2px solid #cc0000;
+				background-color:rgba(255,0,0,0.025);
+				position: absolute;
+				height:40%;
+				top:30%;
+				display: none;
+			}
+
+			#penaltyAreaLeft {
+				left:-2px;
+			}
+
+			#penaltyAreaRight {
+				right:-2px;
+			}
+
+			.circle {
+				border-radius: 50%;
+				width: 28%;
+				height: 50%;
+				border:2px solid rgba(200,0,0,1);
+				/*background-color:rgba(255,0,0,0.1);*/
+				position: absolute;
+				/*display: inline-block;*/
+			}
+
+			#semiCircleLeft {
+				left:-14%;
+				top:25%;
+			}
+
+			#semiCircleRight {
+				right:-14%;
+				top:25%;
+			}
+
+			.airHockey {
+				font-family: 'Republica Italic';
+				font-size: 40pt;
+				background: none;
+				position: absolute;
+			}
+
+			.airHockey span.red {
+				color:rgba(255,0,0,0.5);
+			}
+
+			.airHockey span.blue {
+				color:rgba(0,0,255,0.5);
+			}
+
+			#airHockey1 {
+				left:50%;
+				top:1%;
+			}
+
+			#airHockey2 {
+				transform: rotate(180deg);
+				bottom:1%;
 			}
 
 		</style>
@@ -65,10 +165,22 @@
 		<script src="http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/require.js"></script>
 	</head>
 	<body>
+		<div class="line" id="lineLeft"></div>
+		<div class="line" id="lineCenter"></div>
+		<div class="line" id="lineRight"></div>
+		<div class="circle" id="semiCircleLeft"></div>
+		<div class="circle" id="semiCircleRight"></div>
+		<div class="penaltyArea" id="penaltyAreaLeft"></div>
+		<div class="penaltyArea" id="penaltyAreaRight"></div>
+		<div id="surface"></div>
 		<div id="viewport"></div>
 		<div class="scoreTicker" id="scoreTicker1">00</div>
 		<div class="scoreTicker" id="scoreTicker2">00</div>
+		<div class="airHockey" id="airHockey1"><span class="red">Hockey</span> <span class="blue">Bar</span></div>
+		<div class="airHockey" id="airHockey2"><span class="red">Hockey</span> <span class="blue">Bar</span></div>
 		<script>
+			var airHockey1 = document.getElementById('airHockey1');
+			var airHockey2 = document.getElementById('airHockey2');
 
 			var scoreTicker1 = document.getElementById('scoreTicker1');
 			var scoreTicker2 = document.getElementById('scoreTicker2');
@@ -86,21 +198,6 @@
 					width: viewWidth,
 					height: viewHeight,
 					meta: false, // don't display meta data
-					styles: {
-						// set colors for the circle bodies
-						'circle' : {
-							strokeStyle: '#333333',
-							lineWidth: 2,
-							fillStyle: '#eeeeee',
-							angleIndicator: '#eeeeee'
-						},
-						'puck' : {
-							strokeStyle: '#333333',
-							lineWidth: 2,
-							fillStyle: '#eeeeee',
-							angleIndicator: '#eeeeee'
-						}
-					}
 				});
 
 				// add the renderer
@@ -130,7 +227,12 @@
 				world.add( Physics.body('puck', {
 				    x: window.innerWidth / 2,
 				    y: window.innerHeight / 2,
-				    radius: 30
+				    radius: 30,
+					styles: {
+						strokeStyle: '#333333',
+						lineWidth: 3,
+						fillStyle: '#ffff00'
+					}
 				}) );
 
 				// add player 1 paddle
@@ -138,10 +240,13 @@
 					Physics.body('circle', {
 						x: 100,
 						y: window.innerHeight / 2,
-						width: 100,
-						height: 50,
-						radius: 50,
-						mass: 40
+						radius: 60,
+						mass: 40,
+						styles: {
+							strokeStyle: '#333333',
+							lineWidth: 5,
+							fillStyle: '#eeeeee'
+						}
 					})
 				);
 
@@ -150,10 +255,13 @@
 					Physics.body('circle', {
 						x: window.innerWidth - 100,
 						y: window.innerHeight / 2,
-						width: 100,
-						height: 50,
-						radius: 50,
-						mass: 40
+						radius: 60,
+						mass: 40,
+						styles: {
+							strokeStyle: '#333333',
+							lineWidth: 5,
+							fillStyle: '#eeeeee'
+						}
 					})
 				);
 
@@ -222,11 +330,11 @@
 					return true;
 				});
 
-				Physics.body('goal1', 'rectangle', function( parent ){
+				Physics.body('goal1', 'rectangle', function( parent ) {
 				    return {};
 				});
 
-				Physics.body('goal2', 'rectangle', function( parent ){
+				Physics.body('goal2', 'rectangle', function( parent ) {
 				    return {};
 				});
 
@@ -236,7 +344,7 @@
 						x: 1,
 						y: window.innerHeight / 2,
 						width: 10,
-						height: window.innerHeight * 0.3,
+						height: window.innerHeight * 0.5,
 						treatment: 'static'
 					})
 				);
@@ -247,7 +355,7 @@
 						x: window.innerWidth - 1,
 						y: window.innerHeight / 2,
 						width: 10,
-						height: window.innerHeight * 0.3,
+						height: window.innerHeight * 0.5,
 						treatment: 'static'
 					})
 				);
@@ -263,12 +371,11 @@
 
 				var scoreStr = '0' + score;
 				scoreStr.slice(-2);
-
 				scoreTicker.innerHTML = scoreStr;
 
 				alert('Player ' + player + ' scored!');
 
-				return (score >= 2);
+				return (score >= 5);
 			}
 
 			function gameOver(winner)
@@ -311,6 +418,9 @@
 				scoreTicker2.style.top = (window.innerHeight / 2) - (scoreTicker1.offsetHeight / 2);
 				//scoreTicker2.style.left = window.innerWidth / 2;
 				scoreTicker2.style.left = window.innerWidth * 0.85 - scoreTicker2.offsetWidth;
+
+				airHockey1.style.left = window.innerWidth * 0.5 - airHockey1.offsetWidth / 2;
+				airHockey2.style.left = window.innerWidth * 0.5 - airHockey2.offsetWidth / 2;
 
 				Physics(init);
 
